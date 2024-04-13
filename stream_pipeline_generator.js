@@ -1,46 +1,43 @@
-const { pipeline } = require('node:stream/promises');
-const fs = require('node:fs');
+const { pipeline } = require("node:stream/promises");
+const fs = require("node:fs");
 
-
-async function processChunk(chunk) {
+async function processChunk(chunk, signal) {
+  // Check if the operation is aborted
+  if (signal.aborted) {
+    throw new Error("Pipeline aborted due to timeout.");
+  }
   // Example processing: Convert chunk to uppercase
   return chunk.toUpperCase();
 }
 
+async function executePipeline(signal) {
+  await pipeline(
+    fs.createReadStream("lowercase.txt"),
+    async function* (source) {
+      source.setEncoding("utf8");
+      for await (const chunk of source) {
+        yield processChunk(chunk, signal);
+      }
+    },
+    fs.createWriteStream("uppercase.txt")
+  );
+}
+
 async function run() {
-  // Create an AbortController and set up a timeout for 5 seconds
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => {
-    controller.abort();
-  }, 5000); // 5 seconds timeout
+  const timeout = setTimeout(() => controller.abort(), 5000);
 
   try {
-    await pipeline(
-      fs.createReadStream('lowercase.txt'),
-      async function* (source, { signal }) {
-        source.setEncoding('utf8');  // Work with strings rather than `Buffer`s.
-        for await (const chunk of source) {
-          // Check if the operation is aborted
-          if (signal.aborted) {
-            console.log('Pipeline aborted due to timeout.');
-            return;
-          }
-          yield processChunk(chunk);  // Process chunk
-        }
-      },
-      fs.createWriteStream('uppercase.txt'),
-      { signal: controller.signal } // Pass the signal to the pipeline
-    );
-    console.log('Pipeline succeeded.');
+    await executePipeline(controller.signal);
+    console.log("Pipeline succeeded.");
   } catch (err) {
-    if (err.name === 'AbortError') {
-      console.log('Pipeline aborted by the user.');
+    if (err.name === "AbortError") {
+      console.log("Pipeline aborted by the user.");
     } else {
-      console.error('Pipeline failed:', err);
+      console.error("Pipeline failed:", err);
     }
   } finally {
-    // Clear the timeout
-    clearTimeout(timeoutId);
+    clearTimeout(timeout);
   }
 }
 
