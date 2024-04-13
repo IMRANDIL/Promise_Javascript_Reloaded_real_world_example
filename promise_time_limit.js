@@ -16,7 +16,7 @@ var timeLimit = function(fn, t) {
 // Define the asynchronous function to fetch data from a remote API
 const fetchDataFromAPI = async (endpoint) => {
     // Simulate fetching data from the API (replace with actual fetch request)
-    await new Promise(resolve => setTimeout(resolve, 5000)); // Simulate delay of 500ms
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate delay of 500ms
     const response = await fetch(endpoint);
     const data = await response.json();
     return data;
