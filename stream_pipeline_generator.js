@@ -3,7 +3,7 @@ const fs = require("node:fs");
 
 async function processChunk(chunk, signal) {
   // Check if the operation is aborted
-  if (signal.aborted) {
+  if (signal && signal.aborted) {
     throw new Error("Pipeline aborted due to timeout.");
   }
   // Example processing: Convert chunk to uppercase
@@ -11,6 +11,14 @@ async function processChunk(chunk, signal) {
 }
 
 async function executePipeline(signal) {
+  // Simulate a delay of 10 seconds
+  await new Promise((resolve, reject) => setTimeout(resolve, 1000));
+
+  // Check if the operation is aborted
+  if (signal && signal.aborted) {
+    throw new Error("Pipeline aborted due to timeout.");
+  }
+
   await pipeline(
     fs.createReadStream("lowercase.txt"),
     async function* (source) {
@@ -23,15 +31,21 @@ async function executePipeline(signal) {
   );
 }
 
-async function run() {
+async function createAbortController(timeoutDuration) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000);
+  const timeout = setTimeout(() => controller.abort(), timeoutDuration);
+  return { controller, timeout };
+}
 
+async function run() {
+  const { controller, timeout } = await createAbortController(5000);
   try {
     await executePipeline(controller.signal);
     console.log("Pipeline succeeded.");
   } catch (err) {
-    if (err.name === "AbortError") {
+    if (err.message === "Pipeline aborted due to timeout.") {
+      console.log("Pipeline aborted due to timeout.");
+    } else if (err.name === "AbortError") {
       console.log("Pipeline aborted by the user.");
     } else {
       console.error("Pipeline failed:", err);
