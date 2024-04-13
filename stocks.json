@@ -1,0 +1,31 @@
+[
+    {
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "price": 138.91,
+      "change": "+0.57",
+      "percent_change": "+0.41%"
+    },
+    {
+      "symbol": "GOOGL",
+      "name": "Alphabet Inc.",
+      "price": 2326.74,
+      "change": "-2.83",
+      "percent_change": "-0.12%"
+    },
+    {
+      "symbol": "MSFT",
+      "name": "Microsoft Corporation",
+      "price": 261.15,
+      "change": "+0.89",
+      "percent_change": "+0.34%"
+    },
+    {
+      "symbol": "AMZN",
+      "name": "Amazon.com Inc.",
+      "price": 3272.71,
+      "change": "-1.26",
+      "percent_change": "-0.04%"
+    }
+  ]
+  
