@@ -2,12 +2,16 @@
   "name": "promise_javascript_reloaded",
   "version": "1.0.0",
   "description": "",
-  "module": "ES6",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "express": "^4.19.2",
+    "node-fetch": "^3.3.2"
+  }
 }

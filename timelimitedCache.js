@@ -1,5 +1,5 @@
 // Import necessary modules
-const fetch = require('node-fetch');
+const axios = require('axios');
 
 // Define the TimeLimitedCache class
 class TimeLimitedCache {
@@ -29,11 +29,14 @@ class TimeLimitedCache {
     }
 }
 
+// Create a singleton instance of the cache
+const cache = new TimeLimitedCache();
+
 // Function to fetch data from an API
 async function fetchDataFromAPI(url) {
     try {
-        const response = await fetch(url);
-        const data = await response.json();
+        const response = await axios.get(url);
+        const data = response?.data
         return data;
     } catch (error) {
         console.error('Error fetching data from API:', error);
@@ -42,7 +45,7 @@ async function fetchDataFromAPI(url) {
 }
 
 // Function to use the cache and fetch data from API if necessary
-async function getCachedDataOrFetch(apiUrl, cache, cacheKey, cacheDuration) {
+async function getCachedDataOrFetch(apiUrl, cacheKey, cacheDuration) {
     let cachedData = cache.get(cacheKey);
     if (cachedData) {
         console.log('Data found in cache.');
@@ -56,17 +59,20 @@ async function getCachedDataOrFetch(apiUrl, cache, cacheKey, cacheDuration) {
 }
 
 // Usage example
-(async () => {
-    const apiUrl = 'https://api.example.com/data';
-    const cache = new TimeLimitedCache();
-    const cacheKey = 'cachedData';
+exports.fetchData = async () => {
+    const apiUrl = 'https://jsonplaceholder.typicode.com/users';
+    
+    // Generate a unique cache key based on the API URL and any additional parameters
+    const cacheKey = `${apiUrl}_GET`; // Example: `${apiUrl}_${method}`
+
     const cacheDuration = 60000; // Cache data for 1 minute (60000 milliseconds)
 
     try {
         // Get data from cache or fetch from API if not cached
-        const data = await getCachedDataOrFetch(apiUrl, cache, cacheKey, cacheDuration);
-        console.log('Fetched data:', data);
+        const data = await getCachedDataOrFetch(apiUrl, cacheKey, cacheDuration);
+        return data;
     } catch (error) {
         console.error('Error:', error);
+        throw error;
     }
-})();
+};
