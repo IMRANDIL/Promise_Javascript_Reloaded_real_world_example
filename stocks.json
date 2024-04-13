@@ -26,5 +26,17 @@
     "price": 3272.71,
     "change": "-1.26",
     "percent_change": "-0.04%"
+  },
+  {
+    "symbol": "RITES",
+    "price": 140.5,
+    "change": "+0.20",
+    "percent_change": "+0.14%"
+  },
+  {
+    "symbol": "ATL",
+    "price": 2300.1,
+    "change": "-1.30",
+    "percent_change": "-0.06%"
   }
 ]
